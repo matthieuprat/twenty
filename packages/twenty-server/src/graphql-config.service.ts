@@ -24,6 +24,8 @@ import { handleExceptionAndConvertToGraphQLError } from 'src/filters/utils/globa
 import { renderApolloPlayground } from 'src/workspace/utils/render-apollo-playground.util';
 import { EnvironmentService } from 'src/integrations/environment/environment.service';
 
+import { User } from './core/user/user.entity';
+
 @Injectable()
 export class GraphQLConfigService
   implements GqlOptionsFactory<YogaDriverConfig<'express'>>
@@ -55,12 +57,18 @@ export class GraphQLConfigService
         },
       },
       conditionalSchema: async (context) => {
-        try {
-          let workspace: Workspace;
+        let workspace: Workspace | undefined;
+        let user: User | undefined;
 
+        try {
           // If token is not valid, it will return an empty schema
           try {
-            workspace = await this.tokenService.validateToken(context.req);
+            const tokenContext = await this.tokenService.validateToken(
+              context.req,
+            );
+
+            workspace = tokenContext.workspace;
+            user = tokenContext.user;
           } catch (err) {
             return new GraphQLSchema({});
           }
@@ -87,6 +95,12 @@ export class GraphQLConfigService
           throw handleExceptionAndConvertToGraphQLError(
             error,
             this.exceptionHandlerService,
+            user
+              ? {
+                  id: user.id,
+                  email: user.email,
+                }
+              : undefined,
           );
         }
       },

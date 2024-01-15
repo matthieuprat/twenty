@@ -172,7 +172,10 @@ export class TokenService {
     return { token };
   }
 
-  async validateToken(request: Request): Promise<Workspace> {
+  async validateToken(request: Request): Promise<{
+    user?: User;
+    workspace: Workspace;
+  }> {
     const token = ExtractJwt.fromAuthHeaderAsBearerToken()(request);
 
     if (!token) {
@@ -183,11 +186,11 @@ export class TokenService {
       this.environmentService.getAccessTokenSecret(),
     );
 
-    const { workspace } = await this.jwtStrategy.validate(
+    const { user, workspace } = await this.jwtStrategy.validate(
       decoded as JwtPayload,
     );
 
-    return workspace;
+    return { user, workspace };
   }
 
   async verifyLoginToken(loginToken: string): Promise<string> {
