@@ -4,7 +4,6 @@ import styled from '@emotion/styled';
 import { useSetRecoilState } from 'recoil';
 import { LightIconButton, MenuItem } from 'tsup.ui.index';
 
-import { CachedObjectRecordEdge } from '@/apollo/types/CachedObjectRecordEdge';
 import { useObjectMetadataItem } from '@/object-metadata/hooks/useObjectMetadataItem';
 import { CoreObjectNameSingular } from '@/object-metadata/types/CoreObjectNameSingular';
 import { FieldDisplay } from '@/object-record/field/components/FieldDisplay';
@@ -60,19 +59,14 @@ export const RecordRelationFieldCardContent = ({
   divider,
   relationRecord,
 }: RecordRelationFieldCardContentProps) => {
-  const { fieldDefinition, entityId } = useContext(FieldContext);
+  const { fieldDefinition } = useContext(FieldContext);
 
   const {
     relationFieldMetadataId,
     relationObjectMetadataNameSingular,
     relationType,
-    fieldName,
     objectMetadataNameSingular,
   } = fieldDefinition.metadata as FieldRelationMetadata;
-
-  const { modifyRecordFromCache } = useObjectMetadataItem({
-    objectNameSingular: objectMetadataNameSingular ?? '',
-  });
 
   const isToOneObject = relationType === 'TO_ONE_OBJECT';
   const {
@@ -128,27 +122,6 @@ export const RecordRelationFieldCardContent = ({
       updateOneRecordInput: {
         [`${relationFieldMetadataItem.name}Id`]: null,
         [relationFieldMetadataItem.name]: null,
-      },
-    });
-
-    modifyRecordFromCache(entityId, {
-      [fieldName]: (cachedRelationConnection, { readField }) => {
-        const edges = readField<CachedObjectRecordEdge[]>(
-          'edges',
-          cachedRelationConnection,
-        );
-
-        if (!edges) {
-          return cachedRelationConnection;
-        }
-
-        return {
-          ...cachedRelationConnection,
-          edges: edges.filter(({ node }) => {
-            const id = readField('id', node);
-            return id !== relationRecord.id;
-          }),
-        };
       },
     });
   };
