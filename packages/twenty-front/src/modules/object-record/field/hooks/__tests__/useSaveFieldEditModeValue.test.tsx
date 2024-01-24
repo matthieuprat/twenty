@@ -11,8 +11,8 @@ import { entityFieldsEditModeValueFamilySelector } from '@/object-record/field/s
 const entityId = 'entityId';
 const fieldName = 'phone';
 
-const Wrapper = ({ children }: { children: ReactNode }) => {
-  return (
+const Wrapper = ({ children }: { children: ReactNode }) =>
+  phoneFieldDefinition ? (
     <MockedProvider addTypename={false}>
       <FieldContext.Provider
         value={{
@@ -25,8 +25,7 @@ const Wrapper = ({ children }: { children: ReactNode }) => {
         <RecoilRoot>{children}</RecoilRoot>
       </FieldContext.Provider>
     </MockedProvider>
-  );
-};
+  ) : null;
 
 describe('useSaveFieldEditModeValue', () => {
   it('should work as expected', () => {

@@ -9,18 +9,19 @@ import { entityFieldsFamilyState } from '@/object-record/field/states/entityFiel
 
 const entityId = 'entityId';
 
-const Wrapper = ({ children }: { children: ReactNode }) => (
-  <FieldContext.Provider
-    value={{
-      fieldDefinition: phoneFieldDefinition,
-      entityId,
-      hotkeyScope: 'hotkeyScope',
-      isLabelIdentifier: false,
-    }}
-  >
-    <RecoilRoot>{children}</RecoilRoot>
-  </FieldContext.Provider>
-);
+const Wrapper = ({ children }: { children: ReactNode }) =>
+  phoneFieldDefinition ? (
+    <FieldContext.Provider
+      value={{
+        fieldDefinition: phoneFieldDefinition,
+        entityId,
+        hotkeyScope: 'hotkeyScope',
+        isLabelIdentifier: false,
+      }}
+    >
+      <RecoilRoot>{children}</RecoilRoot>
+    </FieldContext.Provider>
+  ) : null;
 
 describe('useIsFieldEmpty', () => {
   it('should work as expected', () => {
